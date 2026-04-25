@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
-const API_BASE = "http://localhost:8008";
+const API_BASE = "http://localhost:8080";
 
 const initialForm = { code: "", name: "", des: "", isActive: true };
 

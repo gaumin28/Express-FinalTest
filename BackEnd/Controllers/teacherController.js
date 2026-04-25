@@ -76,50 +76,57 @@ export const getTeachers = async (req, res) => {
     const limitNumber = Math.max(1, Number(limit) || 20);
     const skip = (pageNumber - 1) * limitNumber;
 
-    const baseMatch = { isDeleted: false };
+    // const baseMatch = { isDeleted: false };
 
-    const [teachers, countResult] = await Promise.all([
-      TeacherModel.aggregate([
-        { $match: baseMatch },
-        {
-          $lookup: {
-            from: "users",
-            localField: "userId",
-            foreignField: "_id",
-            as: "userId",
-          },
-        },
-        { $unwind: "$userId" },
-        { $match: { "userId.isDeleted": false } },
-        { $sort: { _id: -1 } },
-        { $skip: skip },
-        { $limit: limitNumber },
-      ]),
-      TeacherModel.aggregate([
-        { $match: baseMatch },
-        {
-          $lookup: {
-            from: "users",
-            localField: "userId",
-            foreignField: "_id",
-            as: "userId",
-          },
-        },
-        { $unwind: "$userId" },
-        { $match: { "userId.isDeleted": false } },
-        { $count: "totalItems" },
-      ]),
-    ]);
+    // const [teachers, countResult] = await Promise.all([
+    //   TeacherModel.aggregate([
+    //     { $match: baseMatch },
+    //     {
+    //       $lookup: {
+    //         from: "users",
+    //         localField: "userId",
+    //         foreignField: "_id",
+    //         as: "userId",
+    //       },
+    //     },
+    //     { $unwind: "$userId" },
+    //     { $match: { "userId.isDeleted": false } },
+    //     { $sort: { _id: -1 } },
+    //     { $skip: skip },
+    //     { $limit: limitNumber },
+    //   ]),
+    //   TeacherModel.aggregate([
+    //     { $match: baseMatch },
+    //     {
+    //       $lookup: {
+    //         from: "users",
+    //         localField: "userId",
+    //         foreignField: "_id",
+    //         as: "userId",
+    //       },
+    //     },
+    //     { $unwind: "$userId" },
+    //     { $match: { "userId.isDeleted": false } },
+    //     { $count: "totalItems" },
+    //   ]),
+    // ]);
+    const allTeachers = await TeacherModel.find({ isDeleted: false })
+      .populate({ path: "userId", match: { isDeleted: false } })
+      .populate("teacherPositions")
+      .sort({ _id: -1 });
 
-    const totalItems = countResult[0]?.totalItems || 0;
-    const totalPages = Math.max(1, Math.ceil(totalItems / limitNumber));
+    const filteredTeachers = allTeachers.filter((t) => t.userId !== null);
+    const totalTeachers = filteredTeachers.length;
+    const teachers = filteredTeachers.slice(skip, skip + limitNumber);
+
+    const totalPages = Math.max(1, Math.ceil(totalTeachers / limitNumber));
 
     return res.status(200).json({
       message: "Success",
       data: teachers,
       pageNumber,
       limitNumber,
-      totalItems,
+      totalItems: totalTeachers,
       totalPages,
     });
   } catch (error) {

@@ -31,6 +31,6 @@ app.use("/teachers", TeacherRouter);
 
 app.use("/teacher-positions", TeacherPositionRouter);
 
-app.listen(8008, () => {
+app.listen(8080, () => {
   console.log("Server is running on port 8080");
 });

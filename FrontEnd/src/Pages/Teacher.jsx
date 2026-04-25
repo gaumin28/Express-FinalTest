@@ -3,7 +3,7 @@ import heroImg from "../assets/hero.png";
 import refreshImg from "../assets/refresh.svg";
 import eye from "../assets/eye.svg";
 
-const API_BASE = "http://localhost:8008";
+const API_BASE = "http://localhost:8080";
 
 const DEGREE_OPTIONS = [
   "Trung học",
@@ -12,7 +12,7 @@ const DEGREE_OPTIONS = [
   "Kỹ sư",
   "Thạc sĩ",
   "Tiến sĩ",
-  "Hậu Tiến sĩ",
+  "Phó Giáo Sư",
   "Giáo sư",
 ];
 
